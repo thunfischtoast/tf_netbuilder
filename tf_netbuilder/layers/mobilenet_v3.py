@@ -35,8 +35,15 @@ class SqueezeExcite(tf.keras.layers.Layer):
 class InvertedResidual(tf.keras.layers.Layer):
 
     def __init__(self, in_chs, out_chs, kernel_size, strides, exp_ratio, se_factor, activation, name, kernel_initializer,
-                 bias_initializer, divisible_by=8, padding='same'):
-        super(InvertedResidual, self).__init__(name=name)
+                 bias_initializer, divisible_by=8, padding='same', **kwargs):
+        super(InvertedResidual, self).__init__(name=name, **kwargs)
+
+        self.in_chs = in_chs
+        self.out_chs = out_chs
+        self.exp_ratio = exp_ratio
+        self.se_factor = se_factor
+        self.activation = activation
+        self.divisible_by = divisible_by
 
         self.has_residual = (in_chs == out_chs and strides == 1)
 
@@ -90,6 +97,19 @@ class InvertedResidual(tf.keras.layers.Layer):
                                     gate_fn=lambda x: tf.nn.relu6(x + 3) * 0.16667, name="squeeze_excite")
         else:
             self.has_se = False
+
+    def get_config(self):
+        config = super().get_config().copy()
+        config.update({
+            "in_chs": self.in_chs,
+            "out_chs": self.out_chs,
+            "strides": self.strides,
+            "exp_ratio": self.exp_ratio,
+            "se_factor": self.se_factor,
+            "activation": self.activation,
+            "divisible_by": self.divisible_by,
+        })
+        return config
 
     def call(self, inputs):
 

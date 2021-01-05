@@ -4,8 +4,10 @@ from tf_netbuilder.layers.mobilenet_v3 import InvertedResidual
 
 
 class ConvBnAct(tf.keras.layers.Layer):
-    def __init__(self, cn_args, name, bn_args=None, activation=None):
-        super(ConvBnAct, self).__init__(name=name)
+    def __init__(self, cn_args, name, bn_args=None, activation=None, **kwargs):
+        super(ConvBnAct, self).__init__(name=name, **kwargs)
+
+        self.cn_args = cn_args
 
         use_bias = cn_args.get("use_bias")
         if not use_bias:
@@ -18,6 +20,12 @@ class ConvBnAct(tf.keras.layers.Layer):
             self.bn = tf.keras.layers.BatchNormalization(**bn_args)
 
         self.act = activation() if activation is not None else None
+
+    def get_config(self):
+        config = super().get_config().copy()
+        config.update({"cn_args": self.cn_args, "bn_args": self.bn_args, "activation": self.act})
+        return config
+
 
     def call(self, inputs):
         x = self.conv(inputs)
