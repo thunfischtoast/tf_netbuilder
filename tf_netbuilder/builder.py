@@ -35,8 +35,8 @@ class InputItem:
 
 
 class StackModule(tf.keras.layers.Layer):
-    def __init__(self, stack_def: list, inputs_chs: list, name: str):
-        super(StackModule, self).__init__(name=name)
+    def __init__(self, stack_def: list, inputs_chs: list, name: str, **kwargs):
+        super(StackModule, self).__init__(name=name, **kwargs)
 
         self.stack_def = stack_def
         self.in_chs = inputs_chs
