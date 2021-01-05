@@ -104,6 +104,11 @@ class StackModule(tf.keras.layers.Layer):
             ei = ExecutionItem(name, block, out_chs, is_oper=False)
 
             return ei
+    
+    def get_config(self):
+        config = super().get_config().copy()
+        config.update({"stack_def": self.stack_def, "inputs_chs": self.in_chs})
+        return config
 
     @staticmethod
     def resolve_reference(ref_name: str, evaluated_tensors: dict):
